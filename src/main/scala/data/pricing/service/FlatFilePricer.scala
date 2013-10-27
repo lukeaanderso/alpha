@@ -4,20 +4,21 @@ import scala.io.Source
 import data.pricing.model.TimeSeriesBar
 import data.pricing.model.TimeSeries
 
-class FlatFilePricer(dataDir: String = "C:/Users/LukeA/Dropbox/Prog/Eclipse/alpha/data") {
+class FlatFilePricer(dataPath: String = "C:/Users/LukeA/Dropbox/Prog/Eclipse/alpha/data/ts.csv") extends PricerTrait {
   
   val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
   
-  def get(symbol: String) = {
-    val path = dataDir + "/" + symbol.toLowerCase + ".csv"
+  def getTimeSeries(symbol: String): TimeSeries = {
+    val path = dataPath
     val source = Source.fromFile(path)
     val lines = source.getLines
     
     val bars = for {
       l <- lines
       val x = l.split(",")
-      if !l.startsWith("#")      
-    } yield TimeSeriesBar(symbol.toUpperCase, format.parse(x(0)), x(1).toDouble, x(2).toDouble, x(3).toDouble, x(6).toDouble, x(5).toDouble)
+      if !l.startsWith("#")
+      if symbol.toUpperCase.equals(x(7).toUpperCase)
+    } yield TimeSeriesBar(x(7).toUpperCase, format.parse(x(0)), x(1).toDouble, x(2).toDouble, x(3).toDouble, x(6).toDouble, x(5).toDouble)
     
     val ts = new TimeSeries(bars toList)
     ts

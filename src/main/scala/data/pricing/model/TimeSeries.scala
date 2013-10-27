@@ -1,16 +1,14 @@
 package data.pricing.model
 
 import util.DateService
-import math.statistics.std
+import math.statistics.{std, cov}
 
 class TimeSeries(arg: List[TimeSeriesBar]) {
   
-  val ts = arg
+  private val ts = arg
   
-  def volatility = {
-    val mReturns = calculateMonthlyReturns
-    val stDeviation = std(mReturns map (_._2))
-    stDeviation
+  def volatility(returns: List[ReturnBar]): Double = {
+    std(returns map (_.ret))
   }
   
   def calculateMonthlyReturns = {
@@ -21,17 +19,27 @@ class TimeSeries(arg: List[TimeSeriesBar]) {
           val mOpen = bars minBy (_.asofDate)
           val mClose = bars maxBy (_.asofDate)
           val mReturn = (mClose.close / mOpen.close) - 1.0
-          (mClose.asofDate, mReturn)
+          ReturnBar(mClose.asofDate, mClose.close, mReturn)
       }
 	)
   }
+  
+  def getRecentReturns(months: Int = 36) = {
+    ((calculateMonthlyReturns toList) sortBy (_.asofDate) reverse) take (months)
+  }
+  
+  def calculateMonthlyVolatility = {
+    val mReturns = getRecentReturns()
+    volatility(mReturns)
+  }
+  
+  def beta(that: List[ReturnBar]) = {
+    val mReturns = getRecentReturns()
+    cov(mReturns.map(_.ret), that.map(_.ret))
+  }
+  
+  def last_px = {
+    (ts sortBy(_.asofDate) head).close
+  }
+  
 }
-
-case class TimeSeriesBar (
-    symbol: String,
-    asofDate: java.util.Date,
-    open: Double,
-    high: Double,
-    low: Double,
-    close: Double,
-    volume: Double)
