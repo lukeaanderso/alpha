@@ -1,18 +1,18 @@
 package data.pricing.model
 
 import util.DateService
-import math.statistics.{std, cov}
+import math.statistics.{stdev, beta}
 
 class TimeSeries(arg: List[TimeSeriesBar]) {
   
   private val ts = arg
   
   def volatility(returns: List[ReturnBar]): Double = {
-    std(returns map (_.ret))
+    stdev(returns map (_.ret))
   }
   
   def calculateMonthlyReturns = {
-    var dateService = new DateService
+    val dateService = new DateService
     ts groupBy (x => dateService.convertMonthYear(x.asofDate)) map (x=>
       x match {
         case (monthYear, bars) =>
@@ -33,13 +33,14 @@ class TimeSeries(arg: List[TimeSeriesBar]) {
     volatility(mReturns)
   }
   
-  def beta(that: List[ReturnBar]) = {
-    val mReturns = getRecentReturns()
-    cov(mReturns.map(_.ret), that.map(_.ret))
-  }
-  
   def last_px = {
     (ts sortBy(_.asofDate) head).close
+  }
+
+  def exposure(l: Iterable[ReturnBar]) = {
+    val bars = calculateMonthlyReturns.map(_.ret)
+    val thoseBars = l.map(_.ret)
+    beta(bars, thoseBars)
   }
   
 }

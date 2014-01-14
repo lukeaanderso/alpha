@@ -4,7 +4,7 @@ import scala.io.Source
 import data.pricing.model.TimeSeriesBar
 import data.pricing.model.TimeSeries
 
-class FlatFilePricer(dataPath: String = "C:/Users/LukeA/Dropbox/Prog/Eclipse/alpha/data/ts.csv") extends PricerTrait {
+class FlatFilePricer(dataPath: String = "/home/landerson/Dev/scala/alpha/data/ts.csv") extends PricerTrait {
   
   val format = new java.text.SimpleDateFormat("yyyy-MM-dd")
   
