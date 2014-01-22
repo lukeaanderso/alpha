@@ -4,6 +4,6 @@ import data.pricing.model.TimeSeries
 
 trait PricerTrait {
   
-  def getTimeSeries(symbol: String): TimeSeries
+  def getTimeSeries(symbol: String, factor: Option[String]): TimeSeries
 
 }

@@ -11,7 +11,7 @@ object MyScript {
     val beta = aaplEquity.timeseries.exposure(googEquity.timeseries.calculateMonthlyReturns)
     println(beta)
     val aaplPosition = new Position(aaplEquity, .50)
-    println(aaplEquity.timeseries.last_px)
+    println(aaplEquity.timeseries.last_value)
     println(aaplPosition)
   }
   
